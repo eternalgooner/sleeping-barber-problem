@@ -1,5 +1,6 @@
 package com.david;
 
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 public class BarberShop {
@@ -7,6 +8,7 @@ public class BarberShop {
 	private WaitingRoom waitingRoom;
 	private BarberChair barberChair;
 	private BlockingQueue<Customer> customerQueue;
+	private int id;
 		
 	public BarberShop(Barber barber, WaitingRoom waitingRoom, BarberChair barberChair) {
 		super();
@@ -40,5 +42,15 @@ public class BarberShop {
 		this.barberChair = barberChair;
 	}
 	
-	
+	public void generateNewCustomer() throws InterruptedException{
+		Random random = new Random();
+		int waitingTimeForNextCustomer = random.nextInt(14) * 1000;
+		try {
+			wait(waitingTimeForNextCustomer);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		customerQueue.put(new Customer("custumer-" + id, false, this));
+		++id;
+	}	
 }

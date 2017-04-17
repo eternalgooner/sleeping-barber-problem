@@ -14,9 +14,11 @@ public class SleepingBarberProblemApp {
 	}
 
 	private void initSetup() {
-		barber = new Barber();
+		barber = new Barber(barberShop);
 		WaitingRoom waitingRoom = new WaitingRoom();
 		BarberChair barberChair = new BarberChair();
 		barberShop = new BarberShop(barber, waitingRoom, barberChair);
+		
+		Thread barber
 	}
 }

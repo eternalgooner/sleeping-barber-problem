@@ -5,11 +5,21 @@ import java.util.concurrent.BlockingQueue;
 public class Barber  implements Runnable{
 	private boolean isCuttingHair;
 	private boolean isSleeping;
-	private boolean isClosingTime = false;
+	private int customersServed;
+	private BarberShop barberShop;
 	private BlockingQueue<Customer> customerQueue;
 	
+	public Barber(BarberShop barberShop) {
+		super();
+		this.barberShop = barberShop;
+	}
+
 	public BlockingQueue<Customer> getCustomerQueue() {
 		return customerQueue;
+	}
+
+	public synchronized int getCustomersServed() {
+		return customersServed;
 	}
 
 	public void setCustomerQueue(BlockingQueue<Customer> customerQueue) {
@@ -34,13 +44,16 @@ public class Barber  implements Runnable{
 		
 	//check if anyone in waiting room
 	private void checkForNextCustomer(){
-		System.out.println("Barber checking the waiting room for next customer...");
-		Customer nextCustomer = customerQueue.poll();
-		if(nextCustomer != null){
-			cutHair(nextCustomer);
-			System.out.println(nextCustomer.getName() + " is waiting for a haircut & will be brought to the barber's chair");
-		}else{
-			goForANap();
+		if (customersServed < 20) {
+			System.out.println("Barber checking the waiting room for next customer...");
+			Customer nextCustomer = customerQueue.poll();
+			if (nextCustomer != null) {
+				cutHair(nextCustomer);
+				System.out.println(
+						nextCustomer.getName() + " is waiting for a haircut & will be brought to the barber's chair");
+			} else {
+				goForANap();
+			} 
 		}
 	}
 	
@@ -73,19 +86,20 @@ public class Barber  implements Runnable{
 	private void customerLeavesTheShop(Customer customer) {
 		System.out.println(customer.getName() + " is now leaving the barber shop");
 		customer.setInShop(false);
+		System.out.println("customers served: " + customersServed);
 		checkForNextCustomer();
 	}
 	
 	//wake up barber
-	private void wakeUp(){
+	public void wakeUp(Customer customer){
 		System.out.println("waking up barber as customer just walked into the shop");
-		Customer customer = new Customer("J.U.S.T.I.N", false);
+		//Customer customer = new Customer("J.U.S.T.I.N", false, barberShop);
 		cutHair(customer);
 	}
 
 	@Override
 	public void run() {
-		while(!isClosingTime){
+		while(customersServed < 20){
 			checkForNextCustomer();
 		}
 	}
